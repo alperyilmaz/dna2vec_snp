@@ -2,18 +2,18 @@
 # word counts is done by jellyfish, to install: sudo apt install jellyfish
 
 GENOME = ../GRCh37.p13/Homo_sapiens.GRCh37.dna.primary_assembly.fa
-VCF = input/human-common_20180423_test.vcf.gz
+#VCF = input/human-common_20180423_test.vcf.gz
+VCF= ../human-common_20180423.vcf.gz
 WORDVECTOR = input/dna2vec-20161219-0153-k3to8-100d-10c-29320Mbp-sliding-Xat.w2v.gz
 
 # all: snp151_hg37_8mer_overlap_count_complexity_genomcount.csv
 # .PHONY: all
 
 analysis: snp151_hg37_8mer_overlap_count_complexity_genomcount.csv
-report: dna2vec-snp151.html
-.PHONY: analysis report
 
-dna2vec-snp151.html: snp151_hg37_8mer_overlap_count_complexity_genomcount.csv 8mer_neighbor_similarity.csv.gz
-	
+report: snp151_hg37_8mer_overlap_count_complexity_genomcount.csv 8mer_neighbor_similarity.csv.gz
+	R -e "rmarkdown::render('report.Rmd')"
+.PHONY: analysis report
 
 snp151_hg37_8mer_overlap_count_complexity_genomcount.csv: snp151_hg37_8mer_overlap_count hg37_08mer_counts
 	@echo "adding complexity and genome counts to overlap counts.."
@@ -67,7 +67,9 @@ test_coordinate:
 clean:
 	rm snp151_hg37_8mer_overlap_count
 	rm snp151_hg37_8mer_overlap_count_complexity_genomcount.csv
+	rm report.html
 
 clean_all: clean
 	rm hg37_08mer_counts
 	rm 8mer_neighbor_similarity.csv.gz
+	rm -r *_cache

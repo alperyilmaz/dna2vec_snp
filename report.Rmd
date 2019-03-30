@@ -1,0 +1,160 @@
+---
+title: "dna2vec-snp151"
+author: "alper yilmaz"
+date: "`r Sys.Date()`"
+output:
+  html_document: 
+    theme: yeti
+    highlight: zenburn
+    df_print: paged
+    # code_folding: hide
+    number_sections: yes
+    toc: yes
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+---
+
+# Kullanılan veriler
+
+* Human common SNPs : ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh37p13/VCF/common_all_20180423.vcf.gz
+* Mouse all SNPs (common not available): ftp://ftp.ncbi.nih.gov/snp/organisms/archive/mouse_10090/VCF/00-All.vcf.gz
+
+> human snp build 151 has 37,906,888 common snps, but UCSC common snps from [build 150](https://genome.ucsc.edu/cgi-bin/hgTables?hgsid=683360095_CGQZ5aPahFSoPsMXl8ScimFRxHsd&clade=mammal&org=Human&db=hg38&hgta_group=varRep&hgta_track=knownGene&hgta_table=0&hgta_regionType=genome&position=chr1%3A11102837-11267747&hgta_outputType=primaryTable&hgta_outFileName=) are only 15,124,100.. They don't agree!
+```
+
+# Verilerin kullanımı
+
+```{r warning=FALSE, message=FALSE}
+library(tidyverse)
+library(plotly)
+library(DT)
+dna2snp <- read_csv("snp151_hg37_8mer_overlap_count_complexity_genomcount.csv", progress = FALSE)
+dna2vec <- read_csv("8mer_neighbor_similarity.csv.gz", progress = FALSE)
+```
+
+`left_join` fonksiyonu ile birleştirilmiştir.
+
+```{r}
+snp2vec <- left_join(dna2snp,dna2vec, by=c("word","var_word")) %>% 
+  select(word,var_word,coordinate = coordinate.x, original = original.x, variant = variant.x, genome_count,snp_count,complexity,cos_sim) 
+#  write_csv("snp151_hg37_8mer_overlap_count_complexity_genomcount_cosine.csv")
+```
+
+Birleştirilen tablo üzerinde çeşitli hesaplamalar yapılıp, ek kolonlar üretilmiştir. Kolon tipleri ve içerdikleri veriye dair önizleme aşağıdaki gibidir.
+
+```{r cache=TRUE}
+snp2vec %>%
+  group_by(word,coordinate) %>% 
+  mutate(totalsnp_percoord=sum(snp_count),
+         rank_snp_coord=as.integer(rank(-snp_count)),
+         rank_cossim_coord=rank(-cos_sim),
+         avg_sim=mean(cos_sim),
+         stddev_sim=sd(cos_sim)) %>% 
+  ungroup() %>% 
+  group_by(word) %>% 
+  mutate(totalsnp_perword=sum(snp_count),
+         rank_snp_word=as.integer(rank(-snp_count)),
+         rank_cossim_word=rank(-cos_sim))%>% 
+  ungroup() %>% 
+  mutate(snpperc_base=snp_count/totalsnp_percoord*100,
+         snpperc_word=snp_count/totalsnp_perword*100) %>% 
+  mutate(ntile=ntile(totalsnp_perword,20)) -> snp2vec_withrank_ntile
+  
+glimpse(snp2vec_withrank_ntile)
+```
+
+# Analiz
+
+Oluşturulan tablo farklı koşullara göre filtrelenmiştir.
+
+```{r}
+snp2vec_withrank_ntile %>% 
+  #filter(coordinate == 4) %>% 
+  filter(stddev_sim > 0.05) %>%
+  filter(snp_count > 25) %>% 
+  select(word,coordinate,var_word,cos_sim,rank_cossim_coord,snp_count,rank_snp_coord,rank_cossim_word,rank_snp_word) %>% #count()
+  filter(rank_cossim_coord ==1, rank_snp_coord==1)  %>% 
+  arrange(-cos_sim) %>% 
+  count(word) %>% arrange(-n) %>%  count(n)
+
+```
+
+```{r}
+snp2vec_withrank_ntile %>% 
+  #filter(coordinate == 4) %>% 
+  filter(stddev_sim > 0.05) %>%
+  filter(snp_count > 25) %>% 
+  select(word,coordinate,var_word,cos_sim,rank_cossim_coord,snp_count,rank_snp_coord,rank_cossim_word,rank_snp_word) %>% #count()
+  filter(rank_cossim_coord ==1, rank_snp_coord==1)  %>% 
+  arrange(-cos_sim) %>% 
+  count(word) %>% arrange(-n) 
+```
+
+```{r}
+snp2vec_withrank_ntile %>% 
+  filter(word=="ACGCCCAG") %>% 
+  #filter(coordinate == 4) %>% 
+  filter(stddev_sim > 0.05) %>%
+  filter(snp_count > 25) %>% 
+  select(word,coordinate,var_word,cos_sim,rank_cossim_coord,snp_count,rank_snp_coord,rank_cossim_word,rank_snp_word) %>% #count()
+ # filter(rank_cossim_coord ==1, rank_snp_coord==1)  %>% 
+  arrange(coordinate)
+```
+
+
+```{r}
+snp2vec_withrank_ntile %>% 
+  #filter(coordinate == 4) %>% 
+  filter(stddev_sim > 0.05) %>%
+  filter(snp_count > 2000) %>% 
+  select(word,coordinate,var_word,cos_sim,rank_cossim_coord,snp_count,rank_snp_coord,rank_cossim_word,rank_snp_word) %>% count() -> total
+
+snp2vec_withrank_ntile %>% 
+  #filter(coordinate == 4) %>% 
+  filter(stddev_sim > 0.05) %>%
+  filter(snp_count > 2000) %>% 
+  select(word,coordinate,var_word,cos_sim,rank_cossim_coord,snp_count,rank_snp_coord,rank_cossim_word,rank_snp_word) %>% 
+  filter(rank_cossim_coord ==1, rank_snp_coord==1)  %>% 
+  arrange(-cos_sim) %>% count() -> filtered
+
+```
+
+# Sonuçlar
+
+Yukarıdaki filtreye göre; `r total$n` adet kelimeden, `r filtered$n` adet kelime snp sayısı ve cosine_similarity arasında benzerlik göstermektedir. Bu da, yüzde `r filtered$n / total$n * 100` doğruluğa tekabül etmektedir.
+
+> UYARI: Filtrelerde snp sayımı 2000'den fazla olan koordinatlar kullanılmıştır.
+
+Filtrelenmiş kelimelere ait veriler aşağıdaki tabloda verilmiştir:
+
+```{r}
+snp2vec_withrank_ntile %>% 
+  #filter(coordinate == 4) %>% 
+  filter(stddev_sim > 0.05) %>%
+  filter(snp_count > 2000) %>% 
+  select(word,coordinate,var_word,cos_sim,rank_cossim_coord,snp_count,rank_snp_coord,rank_cossim_word,rank_snp_word) %>% 
+  filter(rank_cossim_coord ==1, rank_snp_coord==1)  %>% 
+  arrange(-cos_sim) %>% 
+  datatable()
+```
+
+Kelimeler, snp sayımı (log değeri alınmıştır) ve cosine_similarity değerlerine göre aşağıdaki grafikte gösterilmiştir, interaktif olarak her bir veri incelenebilir.
+
+```{r}
+p3 <- snp2vec_withrank_ntile %>% 
+  #filter(coordinate == 4) %>% 
+  filter(stddev_sim > 0.05) %>%
+  filter(snp_count > 2000) %>% 
+  # select(word,coordinate,orig,var,var_word,cos_sim,rank_cossim_coord,snp_count,rank_snp_coord,rank_cossim_word,rank_snp_word) %>% 
+  filter(rank_cossim_coord ==1, rank_snp_coord==1) %>% 
+  ggplot(aes(x=cos_sim, y = log(snp_count), text= paste("word: ", word, 
+                                                  "\nVar: ",original," -> ", variant, 
+                                                  "\nAvg_sim: ",avg_sim,
+                                                  "\nStd_dev_sim: ", stddev_sim,
+                                                  "\nSNP count: ", snp_count))) +
+  geom_point()
+
+ggplotly(p3)
+```
+
