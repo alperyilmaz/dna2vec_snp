@@ -8,6 +8,13 @@ WORDVECTOR = input/dna2vec-20161219-0153-k3to8-100d-10c-29320Mbp-sliding-Xat.w2v
 # all: snp151_hg37_8mer_overlap_count_complexity_genomcount.csv
 # .PHONY: all
 
+analysis: snp151_hg37_8mer_overlap_count_complexity_genomcount.csv
+report: dna2vec-snp151.html
+.PHONY: analysis report
+
+dna2vec-snp151.html: snp151_hg37_8mer_overlap_count_complexity_genomcount.csv 8mer_neighbor_similarity.csv.gz
+	
+
 snp151_hg37_8mer_overlap_count_complexity_genomcount.csv: snp151_hg37_8mer_overlap_count hg37_08mer_counts
 	@echo "adding complexity and genome counts to overlap counts.."
 	@echo
@@ -28,6 +35,11 @@ snp151_hg37_8mer_overlap_count:
 	awk -f scripts/add_neighbor_to_variant | \
 	grep -v N | \
 	sort > $@
+
+8mer_neighbor_similarity.csv.gz:
+	@echo "Generating neighbor similarity for 8mers.."
+	@scripts/generate_neighbor_similarity.R -f ${WORDVECTOR} | \
+	gzip -c > $@
 
 hg37_08mer_counts:
 	@echo "genome counts file is missing.. generating counts with jellyfish.."
@@ -58,3 +70,4 @@ clean:
 
 clean_all: clean
 	rm hg37_08mer_counts
+	rm 8mer_neighbor_similarity.csv.gz
