@@ -1,0 +1,7 @@
+#!/usr/bin/awk -f
+{
+ if(length($4)==1 && length($5)==1) {
+  for (i = 1; i <= 8; i++) 
+    printf"%s\t%s\t%s\t%s:%s:%s:%s:%s\t.\t.\n",$1,$2-9+i,$2-1+i,$3,$2,$4,$5,9-i
+  }
+}

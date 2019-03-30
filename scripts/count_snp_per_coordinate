@@ -1,0 +1,10 @@
+#!/usr/bin/awk -f
+
+{
+ kmer[toupper($9)][$5][$3][$4]++
+}
+END{
+ for (k in kmer) { 
+   for (pos in kmer[k]) { 
+     for (ref in kmer[k][pos]) { 
+       for (var in kmer[k][pos][ref]) { print k,pos,ref,var,kmer[k][pos][ref][var] } } } } }

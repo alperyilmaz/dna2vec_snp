@@ -1,0 +1,11 @@
+#!/usr/bin/awk -f
+BEGIN{OFS="\t"}
+{
+ split($1,letters,""); 
+ letters[$2]=$4; 
+ joined=""; 
+ for (i=1; i in letters; i++) { 
+   joined=joined letters[i]
+ } 
+ print $0,joined
+}

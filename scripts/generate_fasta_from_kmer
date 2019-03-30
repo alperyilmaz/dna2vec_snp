@@ -1,0 +1,9 @@
+#!/usr/bin/awk -f
+
+{
+kmers[$1]++
+}
+
+END{
+for (kmer in kmers) printf(">%s\n%s\n",kmer,kmer)
+}

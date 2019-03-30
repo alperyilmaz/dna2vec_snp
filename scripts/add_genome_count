@@ -1,0 +1,24 @@
+#!/usr/bin/awk -f
+BEGIN{
+ OFS=",";
+ print "word,coordinate,original,variant,snp_count,var_word,complexity,genome_count";
+}
+
+{
+ if (NR==FNR) {
+  # the script is called as "script fileb filea"
+  # following lines are done for fileb
+  # keep the data from fileb that you want to add
+  # to filea in an associative array
+  # keep count($2) data associated with kmer($1)
+  a[$1]=$2; 
+  next
+ }
+ # now in filea, check if there's data in array
+ # if there's one, make it last column
+ # if not last column is 0
+ if ($1 in a) {$8 = a[$1]}
+ else { $8 = 0}
+ print $1, $2, $3, $4, $5, $6, $7, $8;
+}
+

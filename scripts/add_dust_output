@@ -1,0 +1,21 @@
+#!/usr/bin/awk -f
+BEGIN{OFS="\t"}
+{
+ if (NR==FNR) {
+  # the script is called as "script fileb filea"
+  # following lines are done for fileb
+  # keep the data from fileb that you want to add
+  # to filea in an associative array
+  gsub(/>/,"",$1);
+  complexity = $3-$2+1;
+  a[$1]=complexity; 
+  next
+ }
+ # now in filea, check if there's data in array
+ # if there's one, make it last column
+ # if not last column is 0
+ if ($1 in a) {$7 = a[$1]}
+ else { $7 = 0}
+ print $1, $2, $3, $4, $5, $6, $7;
+}
+
