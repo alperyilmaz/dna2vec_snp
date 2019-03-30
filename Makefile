@@ -2,8 +2,8 @@
 # word counts is done by jellyfish, to install: sudo apt install jellyfish
 
 GENOME = ../GRCh37.p13/Homo_sapiens.GRCh37.dna.primary_assembly.fa
-#VCF = input/human-common_20180423_test.vcf.gz
-VCF= ../human-common_20180423.vcf.gz
+VCF = input/human-common_20180423_test.vcf.gz
+#VCF= ../human-common_20180423.vcf.gz
 WORDVECTOR = input/dna2vec-20161219-0153-k3to8-100d-10c-29320Mbp-sliding-Xat.w2v.gz
 
 # all: snp151_hg37_8mer_overlap_count_complexity_genomcount.csv
@@ -72,4 +72,5 @@ clean:
 clean_all: clean
 	rm hg37_08mer_counts
 	rm 8mer_neighbor_similarity.csv.gz
-	rm -r *_cache
+	rm -r *_cache *_files
+
