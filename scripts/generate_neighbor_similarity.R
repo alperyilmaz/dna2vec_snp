@@ -21,7 +21,7 @@ if (is.null(opt$file)){
 
 # import word2vector data
 
-write("Importing dna2vec data..", stderr())
+write("** importing dna2vec data..", stderr())
 
 w2v <- read_delim(opt$file, 
                   delim = " ", 
@@ -30,7 +30,7 @@ w2v <- read_delim(opt$file,
 
 # keep vector nested, now there are only two columns
 
-write("Nesting vector data..", stderr())
+write("** nesting vector data..", stderr())
 
 w2v_nested <- w2v %>% 
   rename(word=X1) %>% 
@@ -49,7 +49,7 @@ replace_nt <- function(word,coord,alt){
 # tidy way of calculating neighbors (hamming distance 1)
 # needs improvement, kind of slow
 
-write("Generating neighbors list..", stderr())
+write("** generating neighbors list..", stderr())
 
 eightmers_neighbors <- w2v %>% 
   filter(str_length(X1)==8) %>% 
@@ -65,7 +65,7 @@ eightmers_neighbors <- w2v %>%
 
 # join vector data, then calculate cos_sim for every pair
 
-write("Calculating cosine similarity", stderr())
+write("** calculating cosine similarity", stderr())
 
 result <- eightmers_neighbors %>% 
   #unnest(neighbor) %>% 
@@ -77,6 +77,6 @@ result <- eightmers_neighbors %>%
 
 # write to stdout
 
-write("Writing results to output..", stderr())
+write("** writing results to output..", stderr())
 
 cat(format_csv(result))

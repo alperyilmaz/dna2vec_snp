@@ -3,7 +3,7 @@
 * bedtools (`sudo apt install bedtools`)
 * jellyfish (if genome counts will be calculated) (`sudo apt install jellyfish`)
 * `ncbi-blast+` package for `dustmasker` utility (`sudo apt install ncbi-blast+`)
-* R packages: `optparse`, `tidyverse`, `lsa`
+* R packages: `optparse`, `tidyverse`, `lsa`, `DT`, `plotly``
 
 # Usage
 

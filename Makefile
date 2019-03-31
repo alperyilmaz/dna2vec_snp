@@ -15,16 +15,16 @@ report: snp151_hg37_8mer_overlap_count_complexity_genomcount.csv 8mer_neighbor_s
 	R -e "rmarkdown::render('report.Rmd')"
 .PHONY: analysis report
 
-snp151_hg37_8mer_overlap_count_complexity_genomcount.csv: snp151_hg37_8mer_overlap_count hg37_08mer_counts
-	@echo "adding complexity and genome counts to overlap counts.."
+snp151_hg37_8mer_overlap_count_complexity_genomcount.csv: snp151_hg37_8mer_overlap_count input/hg37_08mer_counts
+	@printf '\e[1m* adding complexity and genome counts to overlap counts..\n\e[0m'
 	@echo
 	@awk -f scripts/generate_fasta_from_kmer $< | \
 	dustmasker -in - -window 8 -level 8 -outfmt acclist | \
 	awk -f scripts/add_dust_output - $< | \
-	awk -f scripts/add_genome_count hg37_08mer_counts - > $@
+	awk -f scripts/add_genome_count input/hg37_08mer_counts - > $@
 
 snp151_hg37_8mer_overlap_count:
-	@echo "generating overlap count.. might take a while.."
+	@printf '\e[1m* generating overlap count.. might take a while..\n\e[0m'
 	@echo
 	@zcat $(VCF) | \
 	egrep -v "^#" | \
@@ -37,12 +37,12 @@ snp151_hg37_8mer_overlap_count:
 	sort > $@
 
 8mer_neighbor_similarity.csv.gz:
-	@echo "Generating neighbor similarity for 8mers.."
+	@printf '\e[1m* generating neighbor similarity for 8mers..\n\e[0m'
 	@scripts/generate_neighbor_similarity.R -f ${WORDVECTOR} | \
 	gzip -c > $@
 
-hg37_08mer_counts:
-	@echo "genome counts file is missing.. generating counts with jellyfish.."
+input/hg37_08mer_counts:
+	@printf '\e[1m* genome counts file is missing.. generating counts with jellyfish..\n\e[0m'
 	@echo
 	jellyfish count -m 8 -s 100000000 -t 7 $(GENOME)
 	jellyfish dump mer_counts.jf | awk '/>/{count=$$0; getline; gsub(/>/,"",count); printf "%s\t%s\n",$$0,count}' > $@
@@ -51,7 +51,7 @@ hg37_08mer_counts:
 .PHONY: clean clean_all test_coordinate
 
 test_coordinate:
-	@echo "testing if coordinates match between vcf file and genome"
+	@printf '\e[1m* testing if coordinates match between vcf file and genome..\n\e[0m'
 	@zgrep -v "^#" ${VCF} | \
 	awk 'length($$4)==1 && length($$5)==1' | \
 	shuf | \
@@ -65,12 +65,11 @@ test_coordinate:
 	@rm _tmp_coordinates _tmp_coordinates2
 
 clean:
-	rm snp151_hg37_8mer_overlap_count
-	rm snp151_hg37_8mer_overlap_count_complexity_genomcount.csv
-	rm report.html
+	rm -f snp151_hg37_8mer_overlap_count
+	rm -f snp151_hg37_8mer_overlap_count_complexity_genomcount.csv
+	rm -f report.html
+	rm -rf *_cache *_files
 
 clean_all: clean
-	rm hg37_08mer_counts
-	rm 8mer_neighbor_similarity.csv.gz
-	rm -r *_cache *_files
-
+	rm -f input/hg37_08mer_counts
+	rm -f 8mer_neighbor_similarity.csv.gz
