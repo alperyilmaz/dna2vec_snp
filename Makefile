@@ -12,7 +12,7 @@ WORDVECTOR = input/dna2vec-20161219-0153-k3to8-100d-10c-29320Mbp-sliding-Xat.w2v
 
 analysis: snp151_hg37_8mer_overlap_count_complexity_genomcount.csv
 
-report: snp151_hg37_8mer_overlap_count_complexity_genomcount.csv 8mer_neighbor_similarity.csv.gz
+report: analysis 8mer_neighbor_similarity.csv.gz
 	R -e "rmarkdown::render('report.Rmd')"
 .PHONY: analysis report
 
@@ -43,11 +43,14 @@ snp151_hg37_8mer_overlap_count:
 	gzip -c > $@
 
 input/hg37_08mer_counts:
-	@printf '\e[1m* genome counts file is missing.. generating counts with jellyfish..\n\e[0m'
+	@printf '\e[1m* genome counts file is missing.. generating counts with kmc..\n\e[0m'
 	@echo
-	jellyfish count -m 8 -s 100000000 -t 7 $(GENOME)
-	jellyfish dump mer_counts.jf | awk '/>/{count=$$0; getline; gsub(/>/,"",count); printf "%s\t%s\n",$$0,count}' > $@
-	rm mer_counts.jf
+	#jellyfish count -m 8 -s 100000000 -t 7 $(GENOME)
+	#jellyfish dump mer_counts.jf | awk '/>/{count=$$0; getline; gsub(/>/,"",count); printf "%s\t%s\n",$$0,count}' > $@
+	#rm mer_counts.jf
+	kmc -b -fm -k8 -ci0 -cs1000000000 -cx1000000000 ${GENOME} kmc_counts .
+	kmc_dump kmc_counts $@
+	rm -f kmc_counts*
 
 .PHONY: clean clean_all test_coordinate
 

@@ -1,7 +1,7 @@
 # Requirements
 
 * bedtools (`sudo apt install bedtools`)
-* jellyfish (if genome counts will be calculated) (`sudo apt install jellyfish`)
+* kmc (if genome counts will be calculated) (`sudo apt install kmc`)
 * `ncbi-blast+` package for `dustmasker` utility (`sudo apt install ncbi-blast+`)
 * R packages: `optparse`, `tidyverse`, `lsa`, `DT`, `plotly``
 
@@ -15,4 +15,12 @@ Then test if coordinates match or not and finally `make`
 make test_coordinate
 make analysis
 make report
+```
+
+## Docker usage
+
+If running locally the genome files can be located at any folder in your computer. However, if you are using Docker image to run the analysis the genome file (and all other files) should reside under mounted directory.
+
+```
+docker run --rm -it --user 1000 -v $(pwd):/app alperyilmaz/snp-dna2vec make analysis
 ```
