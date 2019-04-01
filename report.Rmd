@@ -19,6 +19,7 @@ output:
 
 * Human common SNPs : ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh37p13/VCF/common_all_20180423.vcf.gz
 * Mouse all SNPs (common not available): ftp://ftp.ncbi.nih.gov/snp/organisms/archive/mouse_10090/VCF/00-All.vcf.gz
+* DNA2Vec : https://raw.githubusercontent.com/pnpnpn/dna2vec/master/pretrained/dna2vec-20161219-0153-k3to8-100d-10c-29320Mbp-sliding-Xat.w2v
 
 > human snp build 151 has 37,906,888 common snps, but UCSC common snps from [build 150](https://genome.ucsc.edu/cgi-bin/hgTables?hgsid=683360095_CGQZ5aPahFSoPsMXl8ScimFRxHsd&clade=mammal&org=Human&db=hg38&hgta_group=varRep&hgta_track=knownGene&hgta_table=0&hgta_regionType=genome&position=chr1%3A11102837-11267747&hgta_outputType=primaryTable&hgta_outFileName=) are only 15,124,100.. They don't agree!
 ```
