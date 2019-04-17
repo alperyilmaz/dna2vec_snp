@@ -45,9 +45,9 @@ snp151_hg37_8mer_overlap_count:
 input/hg37_08mer_counts:
 	@printf '\e[1m* genome counts file is missing.. generating counts with kmc..\n\e[0m'
 	@echo
-	#jellyfish count -m 8 -s 100000000 -t 7 $(GENOME)
-	#jellyfish dump mer_counts.jf | awk '/>/{count=$$0; getline; gsub(/>/,"",count); printf "%s\t%s\n",$$0,count}' > $@
-	#rm mer_counts.jf
+	@#jellyfish count -m 8 -s 100000000 -t 7 $(GENOME)
+	@#jellyfish dump mer_counts.jf | awk '/>/{count=$$0; getline; gsub(/>/,"",count); printf "%s\t%s\n",$$0,count}' > $@
+	@#rm mer_counts.jf
 	kmc -b -fm -k8 -ci0 -cs1000000000 -cx1000000000 ${GENOME} kmc_counts .
 	kmc_dump kmc_counts $@
 	rm -f kmc_counts*
