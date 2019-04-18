@@ -62,7 +62,7 @@ test_coordinate:
 	head -1000 | \
 	awk '{printf "%s\t%s\t%s\t%s-%s-%s\t.\t.\n",$$1,$$2-1,$$2,$$3,$$4,$$5}' >| _tmp_coordinates
 
-	@bedtools getfasta -fi ${GENOME} -bed _tmp_coordinates -name -tab | tr "-" "\t" | awk '$$2!=$$5' > _tmp_coordinates2
+	@bedtools getfasta -fi ${GENOME} -bed _tmp_coordinates -name -tab | tr "-" "\t" | awk '$$2!=toupper($$5)' > _tmp_coordinates2
 
 	@echo "VCF file coordinates and genome coordinates"
 	@if [ -s _tmp_coordinates2 ]; then echo "DO NOT MATCH"; else echo "MATCH"; fi 
