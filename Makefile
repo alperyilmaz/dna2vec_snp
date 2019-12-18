@@ -1,5 +1,8 @@
 # complexity calculation is done by dustmasker, to install: sudo apt install ncbi-blast+
-# word counts is done by jellyfish, to install: sudo apt install jellyfish
+# word counts is done by kmc, to install: sudo apt install kmc
+
+# containerized run is possible
+# docker run --rm -it --user 1000 -v $(pwd):/app alperyilmaz/snp-dna2vec make analysis
 
 GENOME = input/GRCh37_genome.fa
 #../GRCh37.p13/Homo_sapiens.GRCh37.dna.primary_assembly.fa
