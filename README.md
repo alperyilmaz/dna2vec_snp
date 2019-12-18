@@ -3,8 +3,8 @@
 * bedtools (`sudo apt install bedtools`)
 * kmc (if genome counts will be calculated) (`sudo apt install kmc`)
 * `ncbi-blast+` package for `dustmasker` utility (`sudo apt install ncbi-blast+`)
-* R packages: `optparse`, `tidyverse`, `lsa`, `DT`, `plotly``
-* perl script [SeqComplex](https://github.com/caballero/SeqComplex)
+* R packages: `optparse`, `tidyverse`, `lsa`, `DT`, `plotly`
+* perl script [SeqComplex](https://github.com/caballero/SeqComplex) (**note**: update Makefile to use `ce` entropy column from file)
 
 # Usage
 
