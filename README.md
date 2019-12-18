@@ -4,6 +4,7 @@
 * kmc (if genome counts will be calculated) (`sudo apt install kmc`)
 * `ncbi-blast+` package for `dustmasker` utility (`sudo apt install ncbi-blast+`)
 * R packages: `optparse`, `tidyverse`, `lsa`, `DT`, `plotly``
+* perl script [SeqComplex](https://github.com/caballero/SeqComplex)
 
 # Usage
 
@@ -24,3 +25,5 @@ If running locally the genome files can be located at any folder in your compute
 ```
 docker run --rm -it --user 1000 -v $(pwd):/app alperyilmaz/snp-dna2vec make analysis
 ```
+
+> Docker image does not contain SeqComplex script yet
